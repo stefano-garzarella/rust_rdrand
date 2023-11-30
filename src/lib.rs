@@ -237,6 +237,14 @@ macro_rules! impl_rand {
                 }
             }
 
+            /// Create a new instance of the random number generator.
+            ///
+            /// This constructor is unsafe because it doesn't check that the CPU supports the
+            /// instruction, but devolves this responsibility to the caller.
+            pub unsafe fn new_unchecked() -> Self {
+                $gen(())
+            }
+
             /// Generate a single random `u16` value.
             ///
             /// The underlying instruction may fail for variety reasons (such as actual hardware
@@ -517,10 +525,10 @@ mod test {
                 (0, 63), // left is empty, right is non-empty.
                 (5, 63), // left and right both are non-empty.
                 (5, 61), // left and right both are non-empty.
-                (0, 8),   // 1 word-worth of data, aligned.
-                (1, 9),   // 1 word-worth of data, misaligned.
-                (0, 7),   // less than 1 word of data.
-                (1, 7),   // less than 1 word of data.
+                (0, 8),  // 1 word-worth of data, aligned.
+                (1, 9),  // 1 word-worth of data, misaligned.
+                (0, 7),  // less than 1 word of data.
+                (1, 7),  // less than 1 word of data.
             ];
             'outer: for &(start, end) in &test_cases {
                 test_buffer = [0; 64];
